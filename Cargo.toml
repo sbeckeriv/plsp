@@ -1,0 +1,20 @@
+[package]
+name = "plsp"
+version = "0.1.0"
+authors = ["becker <github@deathbyescalator.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lsp-server = "*"
+lsp-types = "*"
+regex = "*"
+#reqwest = {version = "0.10.6", features = ["blocking"]}
+#strum = "0.18.0"
+#strum_macros = "0.18.0"
+serde_json = "*"
+serde = "*"
+flexi_logger = "0.15.7" # write to stderr instead of stdout
+log = {version = "0.4.8"}
+radix_trie = "0.2"
