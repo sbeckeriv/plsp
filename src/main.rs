@@ -29,7 +29,7 @@ pub fn main() {
     let hover_provider = Some(HoverProviderCapability::Simple(true));
     let completion_provider = Some(CompletionOptions {
         resolve_provider: Some(true),
-        trigger_characters: Some(vec![":".to_string(), "(".to_string()]),
+        trigger_characters: None,
         work_done_progress_options: WorkDoneProgressOptions {
             work_done_progress: Some(true),
         },
@@ -60,7 +60,7 @@ fn empty_response(id: &lsp_server::RequestId) -> Response {
 
 fn handle_completion(id: &lsp_server::RequestId, params: &lsp_types::CompletionParams) -> Response {
     // get the word under the cursor
-    let word = get_context_from_file_params(params);
+    let word = get_word_from_file_params(&params.text_document_position);
 
     info!("completion word {:?}", &word);
     // get documentation ------------------------------------------------------
@@ -177,19 +177,6 @@ pub fn find_word_at_pos(line: &str, col: Column) -> (Column, Column) {
 
     let end = end.next();
     (start, end.map(|(i, _)| i).unwrap_or(col) as usize)
-}
-
-pub fn get_context_from_file_params(params: &CompletionParams) -> Result<String, ()> {
-    let uri = params.text_document_position.text_document.uri.clone();
-    let line = params.text_document_position.position.line as usize;
-    let col = params.text_document_position.position.character as usize;
-
-    let file = File::open(uri.to_file_path()?).expect(&format!("Couldn't open file -> {}", uri));
-    let buf_reader = std::io::BufReader::new(file);
-
-    let line_conts = buf_reader.lines().nth(line).unwrap().unwrap();
-    let (start, end) = find_word_at_pos(&line_conts, col);
-    Ok(String::from(&line_conts[start..end]))
 }
 
 pub fn get_word_from_file_params(pos_params: &TextDocumentPositionParams) -> Result<String, ()> {
